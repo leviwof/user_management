@@ -29,6 +29,12 @@ export default async function EditUserPage({ params }: EditUserPageProps) {
     notFound();
   }
 
+  const formattedUser = {
+    ...user,
+    role: user.role as 'Admin' | 'User',
+    createdAt: user.createdAt.toISOString(),
+  };
+
   return (
     <div className="mx-auto max-w-2xl">
       <Card>
@@ -37,7 +43,7 @@ export default async function EditUserPage({ params }: EditUserPageProps) {
           <CardDescription>Update user information.</CardDescription>
         </CardHeader>
         <CardContent>
-          <UserForm user={user} isEditing />
+          <UserForm user={formattedUser} isEditing />
         </CardContent>
       </Card>
     </div>
