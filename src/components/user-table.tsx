@@ -10,7 +10,12 @@ import Link from 'next/link';
 import { toast } from '@/components/ui/toast';
 import { userApi } from '@/lib/api-client';
 
-export function UserTable() {
+interface UserTableProps {
+  refreshTrigger?: number;
+  onRefresh?: () => void;
+}
+
+export function UserTable({ refreshTrigger = 0, onRefresh }: UserTableProps) {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -38,7 +43,16 @@ export function UserTable() {
 
   useEffect(() => {
     fetchUsers(search, page);
-  }, [fetchUsers]);
+  }, [fetchUsers, refreshTrigger]);
+
+  useEffect(() => {
+    if (onRefresh) {
+      const handleCustomRefresh = () => {
+        fetchUsers(search, page);
+      };
+      (window as any).__refreshUsersTable = handleCustomRefresh;
+    }
+  }, [fetchUsers, onRefresh, search, page]);
 
   const handleSearch = useCallback(() => {
     setPage(1);

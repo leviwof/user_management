@@ -21,9 +21,10 @@ import { useRouter } from 'next/navigation';
 interface UserFormProps {
   user?: User;
   isEditing?: boolean;
+  onSuccess?: () => void;
 }
 
-export function UserForm({ user, isEditing = false }: UserFormProps) {
+export function UserForm({ user, isEditing = false, onSuccess }: UserFormProps) {
   const router = useRouter();
   const {
     register,
@@ -57,8 +58,13 @@ export function UserForm({ user, isEditing = false }: UserFormProps) {
         await userApi.createUser(data);
         toast.success('User created successfully');
       }
-      router.push('/users');
-      router.refresh();
+      
+      setTimeout(() => {
+        if (typeof window !== 'undefined' && (window as any).__refreshUsersTable) {
+          (window as any).__refreshUsersTable();
+        }
+        router.push('/users');
+      }, 100);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : `Failed to ${isEditing ? 'update' : 'create'} user`);
     }
